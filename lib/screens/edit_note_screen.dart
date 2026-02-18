@@ -48,6 +48,14 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     _contentController.selection =
         TextSelection.collapsed(offset: start + 1);
   }
+  bool _hasChanges() {
+    final originalTitle = widget.existing?.title ?? '';
+    final originalContent = widget.existing?.content ?? '';
+
+    return _titleController.text != originalTitle || _contentController.text != originalContent;
+
+
+  }
 
   void _save() {
     final title = _titleController.text.trim();
@@ -105,10 +113,43 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final isEditing = widget.existing != null;
+Widget build(BuildContext context) {
+  final isEditing = widget.existing != null;
 
-    return Scaffold(
+  return PopScope(
+    canPop: false,
+    onPopInvoked: (didPop) async {
+      if (didPop) return;
+
+      if (_hasChanges()) {
+        final shouldSave = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Unsaved Changes"),
+            content: const Text("Do you want to save your changes?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Discard"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text("Save"),
+              ),
+            ],
+          ),
+        );
+
+        if (shouldSave == true) {
+          _save();
+        } else {
+          Navigator.pop(context);
+        }
+      } else {
+        Navigator.pop(context);
+      }
+    },
+    child: Scaffold(
       appBar: AppBar(
         title: Text(isEditing ? 'Edit Note' : 'New Note'),
         actions: [
@@ -171,7 +212,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
 }
-
+}
