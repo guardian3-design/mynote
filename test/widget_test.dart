@@ -35,8 +35,9 @@ void main() {
     await tester.pumpAndSettle();
   });
 
-  testWidgets('When logged out, app navigates to Login screen after splash',
-      (WidgetTester tester) async {
+  testWidgets('When logged out, app navigates to Login screen after splash', (
+    WidgetTester tester,
+  ) async {
     SharedPreferences.setMockInitialValues({'mynote_logged_in': false});
 
     await tester.pumpWidget(const MyNoteApp());
@@ -51,8 +52,9 @@ void main() {
     expect(find.text('Forgot password?'), findsOneWidget);
   });
 
-  testWidgets('When logged in, app navigates to NotesList and shows FAB',
-      (WidgetTester tester) async {
+  testWidgets('When logged in, app navigates to NotesList and shows FAB', (
+    WidgetTester tester,
+  ) async {
     SharedPreferences.setMockInitialValues({'mynote_logged_in': true});
 
     await tester.pumpWidget(const MyNoteApp());
