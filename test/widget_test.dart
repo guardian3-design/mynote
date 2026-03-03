@@ -17,8 +17,15 @@ void main() {
     await Hive.openBox('notesBox');
   });
 
+  // NEW: Clear notes before EACH test so tests don't affect each other
+  setUp(() async {
+    await Hive.box('notesBox').clear();
+  });
+
+  // NEW: Close Hive properly at the end (best practice)
   tearDownAll(() async {
     await Hive.box('notesBox').close();
+    await Hive.close();
   });
 
   testWidgets('Splash shows MyNote text', (WidgetTester tester) async {
@@ -35,35 +42,37 @@ void main() {
     await tester.pumpAndSettle();
   });
 
-  testWidgets('When logged out, app navigates to Login screen after splash', (
-    WidgetTester tester,
-  ) async {
-    SharedPreferences.setMockInitialValues({'mynote_logged_in': false});
+  testWidgets(
+    'When logged out, app navigates to Login screen after splash',
+    (WidgetTester tester) async {
+      SharedPreferences.setMockInitialValues({'mynote_logged_in': false});
 
-    await tester.pumpWidget(const MyNoteApp());
+      await tester.pumpWidget(const MyNoteApp());
 
-    // Let the 2-second splash timer finish
-    await tester.pump(const Duration(seconds: 2));
-    await tester.pumpAndSettle();
+      // Let the 2-second splash timer finish
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpAndSettle();
 
-    // Login screen UI checks (must match your LoginScreen text/buttons)
-    expect(find.text('Create New Account'), findsOneWidget);
-    expect(find.text('Forgot username?'), findsOneWidget);
-    expect(find.text('Forgot password?'), findsOneWidget);
-  });
+      // Login screen UI checks (must match your LoginScreen text/buttons)
+      expect(find.text('Create New Account'), findsOneWidget);
+      expect(find.text('Forgot username?'), findsOneWidget);
+      expect(find.text('Forgot password?'), findsOneWidget);
+    },
+  );
 
-  testWidgets('When logged in, app navigates to NotesList and shows FAB', (
-    WidgetTester tester,
-  ) async {
-    SharedPreferences.setMockInitialValues({'mynote_logged_in': true});
+  testWidgets(
+    'When logged in, app navigates to NotesList and shows FAB',
+    (WidgetTester tester) async {
+      SharedPreferences.setMockInitialValues({'mynote_logged_in': true});
 
-    await tester.pumpWidget(const MyNoteApp());
+      await tester.pumpWidget(const MyNoteApp());
 
-    // Let the 2-second splash timer finish
-    await tester.pump(const Duration(seconds: 2));
-    await tester.pumpAndSettle();
+      // Let the 2-second splash timer finish
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpAndSettle();
 
-    // Notes list screen should have floating action button (+)
-    expect(find.byType(FloatingActionButton), findsOneWidget);
-  });
+      // Notes list screen should have floating action button (+)
+      expect(find.byType(FloatingActionButton), findsOneWidget);
+    },
+  );
 }

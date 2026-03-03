@@ -1,48 +1,67 @@
-//Flutter testing library
+// Flutter testing library
 import 'package:flutter_test/flutter_test.dart';
 
-//Import the Note model so we can test it
+// Import the Note model
 import 'package:mynote/models/note.dart';
 
 void main() {
-  //Test 1: is checking that a Note stores values correctly
-
+  // =========================================================
+  // TEST 1: Note stores all values correctly
+  // =========================================================
   test('Note object stores values correctly', () {
-    //Create a new Note object
+    final now = DateTime.now();
+
     final note = Note(
       id: '1',
       title: 'Test',
       content: 'Hello',
-      updatedAt: DateTime.now(),
+      folder: 'CSIT 112',
+      category: 'Homework',
+      tags: ['week3', 'exam'],
+      createdAt: now,
+      updatedAt: now,
     );
 
-    //Verify esch field matches what we passed in
     expect(note.id, '1');
     expect(note.title, 'Test');
     expect(note.content, 'Hello');
+    expect(note.folder, 'CSIT 112');
+    expect(note.category, 'Homework');
+    expect(note.tags.length, 2);
+    expect(note.tags.contains('week3'), true);
+    expect(note.tags.contains('exam'), true);
   });
 
-  //  NEW TEST #1
-  //This test is for Title can be empty,untitled allowed
+  // =========================================================
+  // TEST 2: Title can be empty (Untitled allowed)
+  // =========================================================
   test('Note title can be empty (Untitled allowed)', () {
     final note = Note(
       id: '2',
       title: '',
       content: 'Content only',
+      folder: 'General',
+      category: 'General',
+      tags: [],
+      createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
-    //expecting tittle to be empty string
+
     expect(note.title, '');
   });
 
-  //  NEW TEST #2
-  //This test is for 2 notes should have different IDS
-  //important so delete/ edit works properly
+  // =========================================================
+  // TEST 3: Different notes must have different IDs
+  // =========================================================
   test('Different notes have different IDs', () {
     final note1 = Note(
       id: '1',
       title: 'A',
       content: 'One',
+      folder: 'Work',
+      category: 'Work',
+      tags: [],
+      createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
 
@@ -50,9 +69,63 @@ void main() {
       id: '2',
       title: 'B',
       content: 'Two',
+      folder: 'Personal',
+      category: 'Personal',
+      tags: [],
+      createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
-    // IDS myst NOT be the same
+
     expect(note1.id != note2.id, true);
+  });
+
+  // =========================================================
+  // TEST 4: Note converts to Map and back correctly
+  // =========================================================
+  test('Note toMap and fromMap preserve data', () {
+    final now = DateTime.now();
+
+    final original = Note(
+      id: '123',
+      title: 'Map Test',
+      content: 'Testing serialization',
+      folder: 'AMAT 240',
+      category: 'Courses',
+      tags: ['lecture', 'matrix'],
+      createdAt: now,
+      updatedAt: now,
+    );
+
+    final map = original.toMap();
+    final recreated = Note.fromMap(map);
+
+    expect(recreated.id, original.id);
+    expect(recreated.title, original.title);
+    expect(recreated.content, original.content);
+    expect(recreated.folder, original.folder);
+    expect(recreated.category, original.category);
+    expect(recreated.tags, original.tags);
+    expect(recreated.createdAt.millisecondsSinceEpoch,
+        original.createdAt.millisecondsSinceEpoch);
+    expect(recreated.updatedAt.millisecondsSinceEpoch,
+        original.updatedAt.millisecondsSinceEpoch);
+  });
+
+  // =========================================================
+  // TEST 5: Backward compatibility (older notes without new fields)
+  // =========================================================
+  test('Note.fromMap works with old data (no folder/tags)', () {
+    final oldMap = {
+      'id': 'legacy',
+      'title': 'Old Note',
+      'content': 'This was created before folders',
+      'updatedAt': DateTime.now().millisecondsSinceEpoch,
+    };
+
+    final note = Note.fromMap(oldMap);
+
+    expect(note.folder, 'General');
+    expect(note.category, 'General');
+    expect(note.tags.isEmpty, true);
   });
 }
