@@ -15,14 +15,14 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   late final TextEditingController _titleController;
   late final TextEditingController _contentController;
 
-  // ✅ NEW: Folder + Tags controllers
+  //  NEW: Folder + Tags controllers
   final TextEditingController _folderCtrl = TextEditingController();
   final TextEditingController _tagsCtrl = TextEditingController();
 
   final FocusNode _titleFocus = FocusNode();
   final FocusNode _contentFocus = FocusNode();
 
-  // ✅ Category options
+  //  Category options
   static const List<String> _categories = [
     'General',
     'Homework',
@@ -43,10 +43,10 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
     _selectedCategory = widget.existing?.category ?? 'General';
 
-    // ✅ Folder default
+    //  Folder default
     _folderCtrl.text = (widget.existing?.folder ?? 'General');
 
-    // ✅ Tags default
+    //  Tags default
     _tagsCtrl.text = (widget.existing?.tags ?? []).join(', ');
   }
 
@@ -61,7 +61,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     super.dispose();
   }
 
-  // ✅ parse tags from comma-separated input
+  // parse tags from comma-separated input
   List<String> _parseTags(String raw) {
     return raw
         .split(',')
@@ -159,7 +159,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         ],
       ),
 
-      // ✅ iPad polish: limit max width
+      // iPad polish: limit max width
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 700),
@@ -178,7 +178,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
                 const SizedBox(height: 12),
 
-                /// ✅ FOLDER / CLASS
+                ///  FOLDER / CLASS
                 TextField(
                   controller: _folderCtrl,
                   decoration: _fieldDecoration('Folder (ex: CSIT 112 / Chores)'),
@@ -187,7 +187,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
                 const SizedBox(height: 12),
 
-                /// ✅ CATEGORY (FIXED: initialValue instead of value)
+                /// CATEGORY (FIXED: initialValue instead of value)
                 DropdownButtonFormField<String>(
                   initialValue: _selectedCategory, // ✅ FIX
                   decoration: _fieldDecoration('Category'),
@@ -203,7 +203,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
                 const SizedBox(height: 12),
 
-                /// ✅ TAGS
+                /// TAGS
                 TextField(
                   controller: _tagsCtrl,
                   decoration: _fieldDecoration('Tags (comma-separated: exam, week3, project)'),
@@ -236,7 +236,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                       maxLines: null,
                       expands: true,
 
-                      // ✅ typing starts at TOP
+                      // typing starts at TOP
                       textAlignVertical: TextAlignVertical.top,
                       textAlign: TextAlign.start,
 
